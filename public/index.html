@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>yobbyking XD — Pair WhatsApp Bot</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#040a13;
+  --card:rgba(15,30,45,0.7);
+  --card-strong:rgba(15,30,45,0.9);
+  --border:rgba(255,255,255,0.08);
+  --border-strong:rgba(255,255,255,0.12);
+  --text:#e8f7ff;
+  --muted:#7a8a9c;
+  --emerald:#34d399;
+  --cyan:#06b6d4;
+  --amber:#fbbf24;
+  --red:#ef4444;
+}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+.bg-aurora{
+  position:fixed;
+  inset:-20%;
+  z-index:-2;
+  background:
+    radial-gradient(50% 40% at 10% 10%, rgba(52,211,153,0.18), transparent 60%),
+    radial-gradient(45% 40% at 90% 90%, rgba(6,182,212,0.18), transparent 60%),
+    radial-gradient(35% 35% at 50% 100%, rgba(168,85,247,0.10), transparent 70%);
+  animation:drift 25s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes drift{
+  0%{transform:translate(-2%,-1%) scale(1)}
+  50%{transform:translate(2%,2%) scale(1.05)}
+  100%{transform:translate(-1%,1%) scale(1)}
+}
+.bg-grid{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background-image:
+    linear-gradient(rgba(52,211,153,0.5) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(52,211,153,0.5) 1px,transparent 1px);
+  background-size:48px 48px;
+  opacity:0.04;
+  mask-image:radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 100%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 100%);
+  pointer-events:none;
+}
+.container{
+  max-width:540px;
+  margin:0 auto;
+  padding:24px 16px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  position:relative;
+}
+.brand{
+  text-align:center;
+  margin-bottom:32px;
+}
+.brand-logo{
+  width:64px;
+  height:64px;
+  margin:0 auto 12px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#34d399,#06b6d4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  font-weight:900;
+  color:#02030a;
+  box-shadow:0 0 40px rgba(52,211,153,0.4);
+  animation:pulseGlow 2.5s ease-in-out infinite;
+}
+@keyframes pulseGlow{
+  0%,100%{box-shadow:0 0 30px rgba(52,211,153,0.3)}
+  50%{box-shadow:0 0 50px rgba(52,211,153,0.6)}
+}
+.brand h1{
+  font-size:24px;
+  font-weight:700;
+  background:linear-gradient(135deg,#34d399,#06b6d4);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  letter-spacing:-0.02em;
+}
+.brand p{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+.card{
+  background:var(--card-strong);
+  border:1px solid var(--border-strong);
+  border-radius:24px;
+  padding:32px 28px;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:24px;
+  padding:1px;
+  background:linear-gradient(135deg,rgba(52,211,153,0.4),rgba(6,182,212,0.4));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+}
+.step-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 12px;
+  border-radius:999px;
+  background:rgba(52,211,153,0.1);
+  border:1px solid rgba(52,211,153,0.3);
+  color:var(--emerald);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  margin-bottom:16px;
+}
+h2{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:8px;
+  letter-spacing:-0.02em;
+}
+.subtitle{
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.5;
+  margin-bottom:24px;
+}
+.form-group{
+  margin-bottom:20px;
+}
+label{
+  display:block;
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.phone-input{
+  display:flex;
+  gap:8px;
+}
+select,input{
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 16px;
+  color:var(--text);
+  font-size:16px;
+  font-family:inherit;
+  outline:none;
+  transition:all 0.2s;
+  width:100%;
+}
+select:focus,input:focus{
+  border-color:rgba(52,211,153,0.5);
+  box-shadow:0 0 0 3px rgba(52,211,153,0.15);
+}
+select{
+  flex:0 0 110px;
+  cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237a8a9c' d='M6 8L0 2l1.4-1.4L6 5.2 10.6.6 12 2z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:36px;
+}
+input.phone{
+  flex:1;
+}
+.btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  padding:16px;
+  border-radius:12px;
+  border:none;
+  font-size:15px;
+  font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-primary{
+  background:linear-gradient(135deg,#34d399,#06b6d4);
+  color:#02030a;
+  box-shadow:0 4px 20px rgba(52,211,153,0.25);
+}
+.btn-primary:hover:not(:disabled){
+  transform:translateY(-1px);
+  box-shadow:0 6px 28px rgba(52,211,153,0.35);
+}
+.btn-primary:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+}
+.btn-secondary{
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  color:var(--text);
+}
+.btn-secondary:hover{
+  background:rgba(255,255,255,0.1);
+}
+.error{
+  background:rgba(239,68,68,0.1);
+  border:1px solid rgba(239,68,68,0.3);
+  color:#fca5a5;
+  padding:12px 16px;
+  border-radius:12px;
+  font-size:13px;
+  margin-top:12px;
+  display:none;
+}
+.error.show{display:block}
+.code-display{
+  display:none;
+  margin-top:24px;
+  text-align:center;
+  animation:fadeIn 0.4s ease;
+}
+.code-display.show{display:block}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.code-box{
+  background:linear-gradient(135deg,rgba(52,211,153,0.1),rgba(6,182,212,0.1));
+  border:2px solid rgba(52,211,153,0.4);
+  border-radius:20px;
+  padding:28px 24px;
+  margin:16px 0;
+}
+.code-label{
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.code-value{
+  font-size:36px;
+  font-weight:800;
+  font-family:'Courier New',monospace;
+  letter-spacing:0.1em;
+  background:linear-gradient(135deg,#34d399,#06b6d4);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  margin-bottom:16px;
+}
+.copy-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 16px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:999px;
+  font-size:12px;
+  font-family:inherit;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.copy-btn:hover{
+  background:rgba(52,211,153,0.1);
+  border-color:rgba(52,211,153,0.3);
+}
+.copy-btn.copied{
+  color:var(--emerald);
+  border-color:rgba(52,211,153,0.4);
+}
+.steps{
+  margin-top:20px;
+  text-align:left;
+  background:rgba(255,255,255,0.03);
+  border-radius:16px;
+  padding:20px;
+}
+.steps-title{
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:12px;
+  color:var(--emerald);
+}
+.step{
+  display:flex;
+  gap:10px;
+  margin-bottom:12px;
+  font-size:13px;
+  line-height:1.5;
+  color:var(--muted);
+}
+.step:last-child{margin-bottom:0}
+.step-num{
+  flex:0 0 22px;
+  height:22px;
+  border-radius:50%;
+  background:rgba(52,211,153,0.15);
+  color:var(--emerald);
+  font-size:11px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.step b{color:var(--text);font-weight:600}
+.spinner{
+  width:16px;
+  height:16px;
+  border:2px solid rgba(2,3,10,0.2);
+  border-top:2px solid #02030a;
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:600;
+  margin-top:12px;
+}
+.status-badge.waiting{
+  background:rgba(251,191,36,0.1);
+  color:var(--amber);
+  border:1px solid rgba(251,191,36,0.3);
+}
+.status-badge.connected{
+  background:rgba(52,211,153,0.1);
+  color:var(--emerald);
+  border:1px solid rgba(52,211,153,0.3);
+}
+.status-badge .dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+  animation:pulse 1.5s infinite;
+}
+@keyframes pulse{50%{opacity:0.3}}
+.footer{
+  text-align:center;
+  margin-top:24px;
+  font-size:11px;
+  color:var(--muted);
+}
+.footer a{color:var(--emerald);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+.features{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:20px;
+}
+.feature{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 8px;
+  text-align:center;
+}
+.feature-icon{font-size:20px;margin-bottom:4px}
+.feature-text{font-size:10px;color:var(--muted);line-height:1.3}
+@media (max-width:480px){
+  .container{padding:16px}
+  .card{padding:24px 20px}
+  .code-value{font-size:28px}
+  .features{grid-template-columns:1fr;gap:6px}
+}
+</style>
+</head>
+<body>
+<div class="bg-aurora"></div>
+<div class="bg-grid"></div>
+
+<div class="container">
+  <div class="brand">
+    <div class="brand-logo">y</div>
+    <h1>yobbyking XD</h1>
+    <p>WhatsApp Bot · Pairing Site</p>
+  </div>
+
+  <div class="card">
+    <div class="step-badge">🔗 Step 1 of 2</div>
+    <h2>Link your WhatsApp</h2>
+    <p class="subtitle">Enter your phone number to get a pairing code. Then enter it on your phone's WhatsApp to connect the bot.</p>
+
+    <div class="form-group">
+      <label for="phone">Your WhatsApp phone number</label>
+      <div class="phone-input">
+        <select id="country" aria-label="Country code">
+          <option value="254">🇰🇪 +254</option>
+          <option value="256">🇺🇬 +256</option>
+          <option value="255">🇹🇿 +255</option>
+          <option value="234">🇳🇬 +234</option>
+          <option value="233">🇬🇭 +233</option>
+          <option value="27">🇿🇦 +27</option>
+          <option value="1">🇺🇸 +1</option>
+          <option value="44">🇬🇧 +44</option>
+          <option value="91">🇮🇳 +91</option>
+          <option value="971">🇦🇪 +971</option>
+        </select>
+        <input class="phone" id="phone" type="tel" inputmode="numeric" placeholder="712 345 678" maxlength="15" autocomplete="off">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="generateBtn" onclick="generateCode()">
+      <span id="btnText">Get pairing code</span>
+    </button>
+
+    <div class="error" id="error"></div>
+
+    <div class="code-display" id="codeDisplay">
+      <div class="step-badge" style="background:rgba(52,211,153,0.15);color:var(--emerald);border-color:rgba(52,211,153,0.3)">✅ Step 2 of 2</div>
+      <h2 style="margin-bottom:4px">Your pairing code</h2>
+      <p class="subtitle">Enter this 8-character code on your WhatsApp phone.</p>
+
+      <div class="code-box">
+        <div class="code-label">Your code</div>
+        <div class="code-value" id="codeValue">—</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyCode()">
+          📋 Copy code
+        </button>
+      </div>
+
+      <div class="steps">
+        <div class="steps-title">📱 How to link on your phone</div>
+        <div class="step"><div class="step-num">1</div><div>Open <b>WhatsApp</b> on your phone</div></div>
+        <div class="step"><div class="step-num">2</div><div>Tap <b>Settings</b> → <b>Linked Devices</b></div></div>
+        <div class="step"><div class="step-num">3</div><div>Tap <b>Link a device</b></div></div>
+        <div class="step"><div class="step-num">4</div><div>Tap <b>Link with phone number instead</b></div></div>
+        <div class="step"><div class="step-num">5</div><div>Enter the code above and tap <b>Done</b></div></div>
+      </div>
+
+      <div class="status-badge waiting" id="statusBadge">
+        <span class="dot"></span>
+        <span id="statusText">Waiting for you to link...</span>
+      </div>
+
+      <button class="btn btn-secondary" style="margin-top:16px" onclick="location.reload()">
+        ↻ Pair another number
+      </button>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">📋</div>
+        <div class="feature-text">Tap-button menus</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💾</div>
+        <div class="feature-text">Contact card auto-sent</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🖼️</div>
+        <div class="feature-text">Custom menu image</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Powered by yobbyking XD · <a href="https://github.com/yobbyking/yobbyking-xd-bot" target="_blank">GitHub</a>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function showError(msg) {
+  const e = $('error');
+  e.textContent = msg;
+  e.classList.add('show');
+}
+function clearError() {
+  $('error').classList.remove('show');
+}
+
+async function generateCode() {
+  clearError();
+  const country = $('country').value;
+  let phone = $('phone').value.replace(/\D/g, '');
+  if (!phone) {
+    showError('Please enter your phone number');
+    return;
+  }
+  // Remove leading 0 if present (common in KE/UG/TZ)
+  if (phone.startsWith('0')) phone = phone.slice(1);
+  const fullPhone = country + phone;
+
+  $('generateBtn').disabled = true;
+  $('btnText').innerHTML = '<span class="spinner"></span> Generating...';
+
+  try {
+    const res = await fetch('/api/pair', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: fullPhone }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to generate code');
+    }
+
+    // Show code
+    $('codeValue').textContent = data.code;
+    $('codeDisplay').classList.add('show');
+    $('generateBtn').style.display = 'none';
+
+    // Start polling for connection status
+    pollStatus(data.sessionId);
+  } catch (err) {
+    showError(err.message || 'Network error. Try again.');
+    $('generateBtn').disabled = false;
+    $('btnText').textContent = 'Get pairing code';
+  }
+}
+
+let statusTimer = null;
+function pollStatus(sessionId) {
+  if (statusTimer) clearInterval(statusTimer);
+  statusTimer = setInterval(async () => {
+    try {
+      const res = await fetch('/api/status/' + sessionId);
+      const data = await res.json();
+      if (data.connected) {
+        const badge = $('statusBadge');
+        badge.classList.remove('waiting');
+        badge.classList.add('connected');
+        $('statusText').textContent = '✅ Connected! Bot is now live.';
+        clearInterval(statusTimer);
+      }
+    } catch {}
+  }, 3000);
+}
+
+function copyCode() {
+  const code = $('codeValue').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = $('copyBtn');
+    btn.innerHTML = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = '📋 Copy code';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// Enter key on phone input triggers generate
+$('phone').addEventListener('keypress', e => {
+  if (e.key === 'Enter') generateCode();
+});
+</script>
+</body>
+</html>

@@ -1,9 +1,10 @@
 # yobbyking XD — WhatsApp Bot
 
-> A multi-user WhatsApp bot with **tap buttons**, **contact card**, and a **.setmenuimage** command. Anyone can DM the bot and use its menu.
+> A multi-user WhatsApp bot with **tap buttons**, **contact card**, and a **.setmenuimage** command. Anyone can DM the bot and use its menu. **Built-in pairing site** at `http://your-vps:3000`.
 
 ## ✨ Features
 
+- 🌐 **Built-in pairing site** — users visit `http://your-vps:3000`, enter their phone, get an 8-char code, link their WhatsApp in seconds (no QR scan needed)
 - 📋 **Tap-button menus** — uses WhatsApp's native listMessage (single button → menu of options)
 - 💾 **Contact card on every menu** — bot sends a vCard contact card so users can save the bot
 - 🖼️ **.setmenuimage command** — reply to a photo/video with `.setmenuimage` and it becomes the persistent menu header (shown on every menu reply)
@@ -24,7 +25,7 @@
 
 ## 🚀 Deploy on Railway (or any Ubuntu VPS)
 
-### Option A — On the same Railway Ubuntu VPS we already have
+### On the Railway Ubuntu VPS we already have
 
 ```bash
 ssh root@altaria.proxy.rlwy.net -p 10754
@@ -35,46 +36,24 @@ git clone https://github.com/yobbyking/yobbyking-xd-bot.git
 cd yobbyking-xd-bot
 npm install
 
-# Set your phone number (international format, no + or spaces)
-# This will generate a pairing code so you can link your WhatsApp
-export BOT_PHONE=254712345678  # <-- change to your real number
-
 # Start in tmux (survives SSH logout)
-tmux new -s bot 'node index.js 2>&1 | tee bot.log'
-
-# See the pairing code:
-tmux a -t bot
-# (Press Ctrl+B then D to detach without killing it)
+tmux new -s bot 'cd ~/yobbyking-xd-bot && node index.js 2>&1 | tee bot.log'
 ```
 
-You'll see a pairing code like:
-```
-🔗 Your pairing code:
-   ABC-XYZ-123
-```
+The bot starts AND a pairing website opens on port 3000. To expose it publicly:
 
-On your phone:
-1. Open WhatsApp
-2. Settings → Linked Devices → Link a device
-3. Tap "Link with phone number instead"
-4. Enter the code: `ABC-XYZ-123`
+1. In Railway → your service → **Settings** → **Networking** → **Public TCP** → add port `3000`
+2. Railway gives you something like `tcp-xyz-abc.up.railway.app:54321`
+3. Open `http://tcp-xyz-abc.up.railway.app:54321` in your browser
 
-Done! The bot is now live on your WhatsApp number.
+## 🌐 Using the pairing site
 
-### Option B — On a fresh VPS
-
-```bash
-# Install Node 20
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash && apt install -y nodejs
-
-# Clone + install
-git clone https://github.com/yobbyking/yobbyking-xd-bot.git
-cd yobbyking-xd-bot
-npm install
-
-# Set your phone number + start
-BOT_PHONE=254712345678 tmux new -s bot 'node index.js'
-```
+1. Open the pairing site URL (e.g. `http://your-vps:3000`)
+2. Select your country code + enter your phone number
+3. Click **Get pairing code**
+4. You'll see an 8-character code like `ABCD-EFGH`
+5. On your phone: WhatsApp → Settings → Linked Devices → Link a device → Link with phone number instead → enter the code
+6. Bot is now live on your WhatsApp!
 
 ## 📋 How to use the bot
 

@@ -17,6 +17,9 @@ const P = require('pino');
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 
 const store = require('./lib/store');
+const { createServer, markAllConnected } = require('./lib/web');
+
+const WEB_PORT = process.env.WEB_PORT || 3000;
 
 // Load all command modules from commands/ folder
 const COMMANDS_DIR = path.join(__dirname, 'commands');
@@ -63,6 +66,8 @@ async function startBot() {
       console.log(`📱 Bot number: ${botNumber}`);
       console.log(`👤 Bot name: ${store.load().botName}`);
       console.log('========================================\n');
+      // Mark all pending pairing sessions as connected
+      markAllConnected();
     }
     if (connection === 'close') {
       const code = lastDisconnect?.error?.output?.statusCode || 0;
@@ -199,6 +204,14 @@ async function handleMessage(msg) {
 startBot().catch(err => {
   console.error('[BOOT] Failed to start:', err);
   process.exit(1);
+});
+
+// Start the pairing web server
+// We pass a getter function so the server always gets the latest socket
+const webApp = createServer(() => sock);
+webApp.listen(WEB_PORT, '0.0.0.0', () => {
+  console.log(`\n🌐 Pairing site live at http://localhost:${WEB_PORT}`);
+  console.log(`   (Expose port ${WEB_PORT} publicly to access from outside)\n`);
 });
 
 process.on('unhandledRejection', (reason) => console.error('[UNHANDLED]', reason));
