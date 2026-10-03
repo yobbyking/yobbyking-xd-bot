@@ -17,7 +17,7 @@ const P = require('pino');
 const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
 
 const store = require('./lib/store');
-const { createServer, markAllConnected } = require('./lib/web');
+const { createServer, markAllConnected, setBotStatus } = require('./lib/web');
 
 const WEB_PORT = process.env.WEB_PORT || 3000;
 
@@ -31,6 +31,7 @@ console.log(`[BOOT] Loaded ${COMMANDS.length} commands:`, COMMANDS.map(c => '.' 
 
 let sock = null;
 let reconnectTimer = null;
+let wsConnected = false;  // true when the WhatsApp WebSocket is open (even before pairing)
 
 async function startBot() {
   const authFolder = process.env.BOT_PHONE
@@ -58,7 +59,14 @@ async function startBot() {
 
   sock.ev.on('connection.update', (update) => {
     const { connection, lastDisconnect } = update;
+    if (connection === 'connecting') {
+      wsConnected = false;
+      setBotStatus(false, false);
+      console.log('[CONN] Connecting to WhatsApp...');
+    }
     if (connection === 'open') {
+      wsConnected = true;
+      setBotStatus(true, true);
       console.log('\n========================================');
       console.log('✅ Bot CONNECTED successfully!');
       const botNumber = sock.user?.id?.split(':')[0];
@@ -66,10 +74,10 @@ async function startBot() {
       console.log(`📱 Bot number: ${botNumber}`);
       console.log(`👤 Bot name: ${store.load().botName}`);
       console.log('========================================\n');
-      // Mark all pending pairing sessions as connected
       markAllConnected();
     }
     if (connection === 'close') {
+      wsConnected = false;
       const code = lastDisconnect?.error?.output?.statusCode || 0;
       console.log('[CONN] closed, code:', code);
       if (code === DisconnectReason.loggedOut) {
