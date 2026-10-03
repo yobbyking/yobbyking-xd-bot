@@ -73,10 +73,29 @@ async function startBot() {
       const code = lastDisconnect?.error?.output?.statusCode || 0;
       console.log('[CONN] closed, code:', code);
       if (code === DisconnectReason.loggedOut) {
-        console.log('[CONN] Logged out — remove the auth folder to re-pair.');
+        console.log('[CONN] Logged out — cleaning auth folder for fresh pairing...');
+        // Auto-clean the auth folder so the bot can generate fresh pairing codes
+        try {
+          const authDir = path.join(__dirname, 'auth');
+          if (fs.existsSync(authDir)) {
+            fs.rmSync(authDir, { recursive: true, force: true });
+            fs.mkdirSync(authDir, { recursive: true });
+            console.log('[CONN] Auth folder cleaned. Restarting in 3s...');
+          }
+        } catch (e) {
+          console.log('[CONN] Failed to clean auth:', e.message);
+        }
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(startBot, 3000);
       } else if (code === DisconnectReason.restartRequired) {
         console.log('[CONN] Restart required — reconnecting...');
         setTimeout(startBot, 2000);
+      } else if (code === 408) {
+        // 408 = timeout. WhatsApp closed the WS because no pairing was completed in time.
+        // Don't delete auth (credentials are still valid), just reconnect.
+        console.log('[CONN] Timeout — reconnecting in 3s (credentials still valid)...');
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(startBot, 3000);
       } else {
         console.log('[CONN] Reconnecting in 5s...');
         clearTimeout(reconnectTimer);
