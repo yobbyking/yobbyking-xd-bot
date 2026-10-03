@@ -1,0 +1,20 @@
+{
+  "name": "yobbyking-xd-bot",
+  "version": "1.0.0",
+  "description": "yobbyking XD — multi-user WhatsApp bot with tap buttons, contact card, and .setmenuimage command",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.0",
+    "pino": "^6.14.0",
+    "qrcode-terminal": "^0.12.0",
+    "sharp": "^0.33.5"
+  }
+}

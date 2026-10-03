@@ -1,0 +1,6 @@
+node_modules/
+auth/
+assets/menu-image.*
+store.json
+*.log
+.DS_Store
